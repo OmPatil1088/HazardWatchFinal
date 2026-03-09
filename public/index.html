@@ -266,8 +266,16 @@ body:JSON.stringify({ message:text })
 });
 
 const data=await res.json();
+
 typing.remove();
 add(data.reply,"bot");
+}
+
+catch(err){
+typing.remove();
+add("Server error. Try again.","bot");
+}
+
 }
 
 function add(text,type){

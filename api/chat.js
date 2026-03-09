@@ -1,5 +1,3 @@
-const router = require("express").Router();
-
 /* =========================
    Personality Modes
    ========================= */
@@ -52,8 +50,6 @@ const formatKit=list=>"Recommended Kit:\n• "+list.join("\n• ");
 
 const intents=[
 
-/* ===== BASIC CHAT ===== */
-
 { tags:["hello","hi","hey"],
   reply:()=>`${getGreeting()}! I am Disaster Guard.` },
 
@@ -102,18 +98,12 @@ const intents=[
    "Even hurricanes run out of energy."
   ]},
 
-
-/* ===== PERSONALITY MODES ===== */
-
 { tags:["professional mode"], reply:()=>{currentMode="professional"; return"Professional mode activated.";}},
 { tags:["friendly mode"], reply:()=>{currentMode="friendly"; return"Friendly mode activated.";}},
 { tags:["funny mode"], reply:()=>{currentMode="funny"; return"Funny mode activated.";}},
 { tags:["emergency mode"], reply:()=>{currentMode="emergency"; return"Emergency mode activated.";}},
 { tags:["exit","reset","normal mode","default mode"],
   reply:()=>{currentMode="friendly"; return"Exited special mode."; }},
-
-
-/* ===== SAFETY QUESTIONS ===== */
 
 { tags:["am i safe","is it safe","danger level"],
   reply:"Safety depends on your location and hazard type. Please provide your location."},
@@ -123,9 +113,6 @@ const intents=[
 
 { tags:["emergency number","help number"],
   reply:"Contact your local emergency services immediately."},
-
-
-/* ===== DISASTERS ===== */
 
 { tags:["tsunami"], reply:"Tsunami warning. Move inland immediately."},
 { tags:["earthquake","quake"], reply:"Drop, Cover, and Hold On."},
@@ -219,21 +206,23 @@ function detectIntent(msg){
 
 
 /* =========================
-   Route
+   Vercel API Handler
    ========================= */
 
-router.post("/",(req,res)=>{
+export default function handler(req,res){
+
+ if(req.method !== "POST"){
+  return res.status(405).json({error:"Method not allowed"});
+ }
 
  const msg=req.body.message||"";
  const result=detectIntent(msg);
 
- res.json({
+ res.status(200).json({
   bot:"Disaster Guard",
   mode:currentMode,
   reply: result || formatReply("I didn't understand. Try asking about disasters or safety."),
   time:new Date()
  });
 
-});
-
-module.exports=router;
+}
