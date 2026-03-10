@@ -1,28 +1,15 @@
-/**
- * HazardWatch News API
- * Fetch disaster-related news from GNews
- */
-
+// api/news.js
 const GNEWS_BASE_URL = "https://gnews.io/api/v4/search";
-const API_KEY = "https://gnews.io/api/v4/search?q=disaster OR flood OR cyclone OR earthquake&lang=en&country=in&max=6&token=fdfb9e5b394271a3b276d5b9c8d0f00e"; // put your key here
+const API_KEY = process.env.GNEWS_API_KEY || "fdfb9e5b394271a3b276d5b9c8d0f00e"; // move key to env for Vercel
 
 export default async function handler(req, res) {
-
     try {
-
         if (!API_KEY) {
-            return res.status(500).json({
-                success: false,
-                message: "Missing GNews API key"
-            });
+            return res.status(500).json({ success: false, message: "Missing GNews API key" });
         }
 
-        const query = encodeURIComponent(
-            "disaster OR flood OR cyclone OR earthquake"
-        );
-
-        const url =
-            `${GNEWS_BASE_URL}?q=${query}&lang=en&max=6&sortby=publishedAt&token=${API_KEY}`;
+        const query = encodeURIComponent("disaster OR flood OR cyclone OR earthquake");
+        const url = `${GNEWS_BASE_URL}?q=${query}&lang=en&country=in&max=6&sortby=publishedAt&token=${API_KEY}`;
 
         const response = await fetch(url);
         const data = await response.json();
@@ -41,14 +28,10 @@ export default async function handler(req, res) {
         });
 
     } catch (error) {
-
         console.error("News API Error:", error);
-
         return res.status(500).json({
             success: false,
             message: "Internal server error while fetching news"
         });
-
     }
-
 }
